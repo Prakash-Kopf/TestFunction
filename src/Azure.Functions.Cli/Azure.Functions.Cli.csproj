@@ -299,7 +299,10 @@
       <Output TaskParameter="Include" ItemName="PublishReadyToRunExclude" />
     </CreateItem>
   </Target>
-  <Target Name="PublishNet8" AfterTargets="Build" Condition="'$(TargetFramework)'=='net6.0'">
+  <Target Name="BuildInProcNet8" AfterTargets="Build" Condition="'$(TargetFramework)'=='net6.0'">
     <Exec Command="dotnet publish --framework net8.0 --output $(OutputPath)/in-proc8 -p:NoWorkers=True" />
+  </Target>
+  <Target Name="PublishInProcNet8" AfterTargets="Publish" Condition="'$(TargetFramework)'=='net6.0'">
+    <Exec Command="dotnet publish --framework net8.0 --output $(PublishDir)/in-proc8 -p:NoWorkers=True" />
   </Target>
 </Project>
