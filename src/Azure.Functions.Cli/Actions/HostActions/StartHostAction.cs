@@ -363,7 +363,7 @@ namespace Azure.Functions.Cli.Actions.HostActions
             var localSettingsJobject = await GetLocalSettingsJsonAsJObjectAsync();
             if (localSettingsJobject != null)
             {
-                var inprocNet8Enabled = localSettingsJobject["Values"]?[Constants.FunctionsInProcNet8Enabled].Value<string>();
+                var inprocNet8Enabled = localSettingsJobject["Values"]?[Constants.FunctionsInProcNet8Enabled]?.Value<string>();
                 return string.Equals("1", inprocNet8Enabled);
             }
 
