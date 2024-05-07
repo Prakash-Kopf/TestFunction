@@ -116,7 +116,7 @@ namespace Build
                                     $"/p:BuildNumber=\"{Settings.BuildNumber}\" " +
                                     $"/p:CommitHash=\"{Settings.CommitId}\" " +
                                     (string.IsNullOrEmpty(Settings.IntegrationBuildNumber) ? string.Empty : $"/p:IntegrationBuildNumber=\"{Settings.IntegrationBuildNumber}\" ") +
-                                    $"-o {outputPath} -c Release " +
+                                    $"-o {outputPath} -c Release -f net6.0" +
                                     (string.IsNullOrEmpty(rid) ? string.Empty : $" -r {rid}"));
 
                 if (runtime.StartsWith(Settings.MinifiedVersionPrefix))
