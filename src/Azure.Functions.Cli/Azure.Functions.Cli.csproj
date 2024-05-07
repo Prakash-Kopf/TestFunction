@@ -300,9 +300,18 @@
     </CreateItem>
   </Target>
   <Target Name="BuildInProcNet8" AfterTargets="Build" Condition="'$(TargetFramework)'=='net6.0'">
-    <Exec Command="dotnet publish --framework net8.0 --output $(OutputPath)/in-proc8 -p:NoWorkers=True" />
+    <Message Text="PublishInProcNet8.RuntimeIdentifier1: $(RuntimeIdentifier)" Importance="high" />
+    <PropertyGroup>
+      <RuntimeIdentifierOption Condition="'$(RuntimeIdentifier)' != ''">-r $(RuntimeIdentifier)</RuntimeIdentifierOption>
+    </PropertyGroup>
+    <Exec Command="dotnet publish --framework net8.0 --output $(OutputPath)/in-proc8 $(RuntimeIdentifierOption) -p:NoWorkers=True" />
   </Target>
   <Target Name="PublishInProcNet8" AfterTargets="Publish" Condition="'$(TargetFramework)'=='net6.0'">
-    <Exec Command="dotnet publish --framework net8.0 --output $(PublishDir)/in-proc8 -p:NoWorkers=True" />
+    <Message Text="PublishInProcNet8.RuntimeIdentifier2: $(RuntimeIdentifier)" Importance="high" />
+    <PropertyGroup>
+      <RuntimeIdentifierOption Condition="'$(RuntimeIdentifier)' != ''">-r $(RuntimeIdentifier)</RuntimeIdentifierOption>
+    </PropertyGroup>
+    <Exec Command="dotnet publish --framework net8.0 --output $(PublishDir)/in-proc8 $(RuntimeIdentifierOption) -p:NoWorkers=True" />
   </Target>
+
 </Project>
