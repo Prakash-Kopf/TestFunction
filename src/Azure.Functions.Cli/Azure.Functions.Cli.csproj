@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="ExcludeWorkersFromReadyToRun">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <AssemblyName>func</AssemblyName>
     <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
     <BuildNumber Condition=" '$(BuildNumber)' == '' ">1</BuildNumber>
@@ -298,5 +298,8 @@
     <CreateItem Include="%(None.Filename)%(None.Extension)" Condition="$([System.String]::new('%(None.TargetPath)').StartsWith('workers'))" PreserveExistingMetadata="false">
       <Output TaskParameter="Include" ItemName="PublishReadyToRunExclude" />
     </CreateItem>
+  </Target>
+  <Target Name="PublishNet8" AfterTargets="Build" Condition="'$(TargetFramework)'=='net6.0'">
+    <Exec Command="dotnet publish --framework net8.0 --output $(OutputPath)/in-proc8 -p:NoWorkers=True" />
   </Target>
 </Project>
