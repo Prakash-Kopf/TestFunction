@@ -582,7 +582,7 @@ namespace Build
                                 $"/p:NoWorkers=\"true\" " +
                                 $"/p:CommitHash=\"{Settings.CommitId}\" " +
                                 (string.IsNullOrEmpty(Settings.IntegrationBuildNumber) ? string.Empty : $"/p:IntegrationBuildNumber=\"{Settings.IntegrationBuildNumber}\" ") +
-                                $"-c Release");
+                                $"-c Release -f net6.0");
         }
 
         public static void GenerateSBOMManifestForNupkg()
