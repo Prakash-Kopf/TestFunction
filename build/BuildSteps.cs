@@ -124,7 +124,7 @@ namespace Build
                     RemoveLanguageWorkers(outputPath);
                 }
             }
-
+  
             if (!string.IsNullOrEmpty(Settings.IntegrationBuildNumber) && (_integrationManifest != null))
             {
                 _integrationManifest.CommitId = Settings.CommitId;
@@ -397,8 +397,12 @@ namespace Build
                 Directory.CreateDirectory(targetDir);
                 FileHelpers.RecursiveCopy(sourceDir, targetDir);
 
-                var toSignPaths = Settings.SignInfo.authentiCodeBinaries.Select(el => Path.Combine(targetDir, el));
-                var toSignThirdPartyPaths = Settings.SignInfo.thirdPartyBinaries.Select(el => Path.Combine(targetDir, el));
+                var toSignPathsForIncproc8 = Settings.SignInfo.authentiCodeBinaries.Select(el => Path.Combine(targetDir, "in-proc8", el));
+                var toSignPaths = Settings.SignInfo.authentiCodeBinaries.Select(el => Path.Combine(targetDir, el)).Concat(toSignPathsForIncproc8);
+
+                var toSignThirdPartyPathsForInproc8 = Settings.SignInfo.thirdPartyBinaries.Select(el => Path.Combine(targetDir,"in-proc8", el));
+                var toSignThirdPartyPaths = Settings.SignInfo.thirdPartyBinaries.Select(el => Path.Combine(targetDir, el)).Concat(toSignThirdPartyPathsForInproc8);
+
                 var unSignedFiles = FileHelpers.GetAllFilesFromFilesAndDirs(FileHelpers.ExpandFileWildCardEntries(toSignPaths))
                                     .Where(file => !Settings.SignInfo.FilterExtensionsSign.Any(ext => file.EndsWith(ext))).ToList();
 
