@@ -406,7 +406,7 @@ namespace Azure.Functions.Cli.Actions.HostActions
 
             if (await IsInprocNet8Enabled())
             {
-                StartInproc8AsChildProcess();
+                await StartInproc8AsChildProcessAsync();
             }
 
             ScriptApplicationHostOptions hostOptions = SelfHostWebHostSettingsFactory.Create(Environment.CurrentDirectory);
@@ -440,15 +440,16 @@ namespace Azure.Functions.Cli.Actions.HostActions
             await runTask;
         }
 
-        private void StartInproc8AsChildProcess()
+        private Task StartInproc8AsChildProcessAsync()
         {
             ColoredConsole.WriteLine(VerboseColor($"Detected .NET8 in-proc application."));
 
-            var originalArguments = string.Join(" ", Environment.GetCommandLineArgs().Skip(1));
+            var originalArguments = string.Join(" ", Environment.GetCommandLineArgs().Skip(1));            
 
             // Ensure we launch the child process only once
             if (!originalArguments.Contains("net8inproc"))
             {
+                var tcs = new TaskCompletionSource<bool>();
                 var functionAppRootPath = GlobalCoreToolsSettings.FunctionAppRootPath;
                 var funcExecutableDirectory = Path.GetDirectoryName(typeof(StartHostAction).Assembly.Location);
                 var inProc8FuncExecutablePath = Path.Combine(funcExecutableDirectory, "in-proc8", "func.exe");
@@ -482,6 +483,11 @@ namespace Azure.Functions.Cli.Actions.HostActions
                             ColoredConsole.WriteLine(ErrorColor(e.Data));
                         }
                     };
+                    childProcess.EnableRaisingEvents = true;
+                    childProcess.Exited += (sender, args) =>
+                    {
+                        tcs.SetResult(true);
+                    };
                     childProcess.BeginOutputReadLine();
                     childProcess.BeginErrorReadLine();
                     _processManager.RegisterChildProcess(childProcess);
@@ -491,7 +497,11 @@ namespace Azure.Functions.Cli.Actions.HostActions
                 {
                     throw new CliException($"Failed to start the child process for in-proc8. {ex.Message}");
                 }
+
+                return tcs.Task;
             }
+
+            return Task.CompletedTask;
         }
 
         private void ValidateAndBuildHostJsonConfigurationIfFileExists(ScriptApplicationHostOptions hostOptions)
