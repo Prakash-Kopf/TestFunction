@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Colors.Net;
 using Colors.Net.StringColorExtensions;
 using Microsoft.WindowsAzure.Storage;
@@ -109,7 +108,7 @@ namespace Build
 
         public static void DotnetPublishForZips()
         {
-            Parallel.ForEach(Settings.TargetRuntimes, runtime =>
+            foreach (var runtime in Settings.TargetRuntimes)
             {
                 var outputPath = Path.Combine(Settings.OutputDir, runtime);
                 var rid = GetRuntimeId(runtime);
@@ -124,7 +123,7 @@ namespace Build
                 {
                     RemoveLanguageWorkers(outputPath);
                 }
-            });
+            }
   
             if (!string.IsNullOrEmpty(Settings.IntegrationBuildNumber) && (_integrationManifest != null))
             {
