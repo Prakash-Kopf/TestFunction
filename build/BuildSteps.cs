@@ -581,6 +581,7 @@ namespace Build
             Shell.Run("dotnet", $"publish {Settings.ProjectFile} " +
                                 $"/p:BuildNumber=\"{Settings.BuildNumber}\" " +
                                 $"/p:NoWorkers=\"true\" " +
+                                $"/p:TargetFramework=net6.0 " +
                                 $"/p:CommitHash=\"{Settings.CommitId}\" " +
                                 (string.IsNullOrEmpty(Settings.IntegrationBuildNumber) ? string.Empty : $"/p:IntegrationBuildNumber=\"{Settings.IntegrationBuildNumber}\" ") +
                                 $"-c Release -f net6.0");
