@@ -33,8 +33,7 @@ namespace Build
                 .Then(Zip)
                 .Then(DotnetPublishForNupkg)
                 .Then(GenerateSBOMManifestForNupkg, skip: !args.Contains("--generateSBOM"))
-                //.Then(DotnetPack)
-                // error - Could not find a part of the path 'D:\a\_work\1\s\src\Azure.Functions.Cli\bin\Release\publish\tools\python\packapp'
+                .Then(DotnetPack)
                 .Then(DeleteSBOMTelemetryFolder, skip: !args.Contains("--generateSBOM"))
                 .Then(CreateIntegrationTestsBuildManifest, skip: !args.Contains("--integrationTests"))
                 .Then(UploadToStorage, skip: !args.Contains("--ci") || args.Contains("--codeql"))
