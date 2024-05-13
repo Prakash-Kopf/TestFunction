@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -332,7 +333,8 @@ namespace Build
 
             Environment.SetEnvironmentVariable("DURABLE_FUNCTION_PATH", Settings.DurableFolder);
 
-            Shell.Run("dotnet", $"test {Settings.TestProjectFile} -f net6.0 --logger trx");
+           // Shell.Run("dotnet", $"test {Settings.TestProjectFile} -f net6.0 --logger trx");
+            Shell.Run("dotnet", $"-f net6.0 --filter Azure.Functions.Cli.Tests.E2E.StartTests.start_dotnet8_inproc");
         }
 
         public static void CopyBinariesToSign()

@@ -29,14 +29,14 @@ namespace Build
                 .Then(TestPreSignedArtifacts, skip: !args.Contains("--ci"))
                 .Then(CopyBinariesToSign, skip: !args.Contains("--ci"))
                 .Then(Test, skip: args.Contains("--codeql"))
-                .Then(GenerateSBOMManifestForZips, skip: !args.Contains("--generateSBOM"))
-                .Then(Zip)
-                //.Then(DotnetPublishForNupkg) // DotnetPack step now does build and pack.
-                .Then(GenerateSBOMManifestForNupkg, skip: !args.Contains("--generateSBOM"))
-                .Then(DotnetPack)
-                .Then(DeleteSBOMTelemetryFolder, skip: !args.Contains("--generateSBOM"))
-                .Then(CreateIntegrationTestsBuildManifest, skip: !args.Contains("--integrationTests"))
-                .Then(UploadToStorage, skip: !args.Contains("--ci") || args.Contains("--codeql"))
+                //.Then(GenerateSBOMManifestForZips, skip: !args.Contains("--generateSBOM"))
+                //.Then(Zip)
+                ////.Then(DotnetPublishForNupkg) // DotnetPack step now does build and pack.
+                //.Then(GenerateSBOMManifestForNupkg, skip: !args.Contains("--generateSBOM"))
+                //.Then(DotnetPack)
+                //.Then(DeleteSBOMTelemetryFolder, skip: !args.Contains("--generateSBOM"))
+                //.Then(CreateIntegrationTestsBuildManifest, skip: !args.Contains("--integrationTests"))
+                //.Then(UploadToStorage, skip: !args.Contains("--ci") || args.Contains("--codeql"))
                 .Run();
         }
     }

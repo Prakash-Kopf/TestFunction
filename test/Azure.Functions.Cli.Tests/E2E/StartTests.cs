@@ -329,16 +329,20 @@ namespace Azure.Functions.Cli.Tests.E2E
                     {
                         (await WaitUntilReady(client)).Should().BeTrue(because: _serverNotReady);
                         var response = await client.GetAsync("/api/HttpTrigger?name=Test");
+                        Console.WriteLine($"Response status code for '/api/HttpTrigger?name=Test': {response.StatusCode}");
                         var result = await response.Content.ReadAsStringAsync();
                         p.Kill();
                         await Task.Delay(TimeSpan.FromSeconds(2));
-                        result.Should().Be("Hello, Test. This HTTP triggered function executed successfully.", because: "response from default function should be 'Hello, {name}. This HTTP triggered function executed successfully.'");
 
                         if (_output is Xunit.Sdk.TestOutputHelper testOutputHelper)
                         {
+                            Console.WriteLine($"Output from test: {testOutputHelper.Output}");
                             testOutputHelper.Output.Should().Contain("Starting child process for .NET8 In-proc.");
                             testOutputHelper.Output.Should().Contain("Started child process with ID");
                         }
+
+                        result.Should().Be("Hello, Test. This HTTP triggered function executed successfully.", because: "response from default function should be 'Hello, {name}. This HTTP triggered function executed successfully.'");
+
                     }
                 },
                 CommandTimeout = TimeSpan.FromSeconds(120),
