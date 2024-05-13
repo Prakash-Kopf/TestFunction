@@ -114,6 +114,7 @@ namespace Azure.Functions.Cli.Actions.LocalActions
 
             await UpdateLanguageAndRuntime();
 
+            var templates = _templates.Value;
             if (WorkerRuntimeLanguageHelper.IsDotnet(workerRuntime) && !Csx)
             {
                 if (string.IsNullOrWhiteSpace(TemplateName))
@@ -125,7 +126,7 @@ namespace Azure.Functions.Cli.Actions.LocalActions
                 {
                     ColoredConsole.WriteLine($"Template: {TemplateName}");
                 }
-                
+
                 ColoredConsole.Write("Function name: ");
                 FunctionName = FunctionName ?? Console.ReadLine();
                 ColoredConsole.WriteLine(FunctionName);
@@ -189,7 +190,7 @@ namespace Azure.Functions.Cli.Actions.LocalActions
                 {
                     FunctionName = providedInputs[GetFunctionNameParamId];
                 }
-                
+
                 await _templatesManager.Deploy(templateJob, template, variables);
             }
             else
