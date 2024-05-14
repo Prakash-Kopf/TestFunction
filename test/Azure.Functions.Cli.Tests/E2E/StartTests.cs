@@ -320,7 +320,7 @@ namespace Azure.Functions.Cli.Tests.E2E
                 {
                     "init . --worker-runtime dotnet --target-framework net8.0",
                     "new --template Httptrigger --name HttpTrigger",
-                    "start --build --port 7073 --verbose"
+                    "start --port 7073 --verbose"
                 },
                 ExpectExit = false,
                 Test = async (workingDir, p) =>
@@ -341,7 +341,7 @@ namespace Azure.Functions.Cli.Tests.E2E
                         }
                     }
                 },
-                CommandTimeout = TimeSpan.FromSeconds(120),
+                CommandTimeout = TimeSpan.FromSeconds(90),
             }, _output);
         }
 

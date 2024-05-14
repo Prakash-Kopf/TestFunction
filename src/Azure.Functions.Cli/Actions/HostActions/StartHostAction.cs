@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Azure.Functions.Cli.Common;
@@ -424,13 +425,28 @@ namespace Azure.Functions.Cli.Actions.HostActions
 
         public override async Task RunAsync()
         {
+            Console.WriteLine($"Environment.CurrentDirectory1: {Environment.CurrentDirectory} RuntimeInformation.FrameworkDescription:{RuntimeInformation.FrameworkDescription}");
+            var isNet6FuncExe = RuntimeInformation.FrameworkDescription.Contains("6.0");
+
             await PreRunConditions();
 
-            var isVerbose = VerboseLogging.HasValue && VerboseLogging.Value;
-            if (isVerbose || EnvironmentHelper.GetEnvironmentVariableAsBool(Constants.DisplayLogo))
+            if (isNet6FuncExe && ShouldLaunchInProcNet8AsChildProcess() && await IsInProcNet8Enabled())
             {
-                Utilities.PrintLogo();
+                
+                await StartInProc8AsChildProcessAsync();
+                Console.WriteLine("After StartInProc8AsChildProcessAsync. ProcessId:" + Environment.ProcessId);
             }
+
+            Console.WriteLine("ProcessId:" + Environment.ProcessId);
+
+
+            Console.WriteLine($"Environment.CurrentDirectory2: {Environment.CurrentDirectory}");
+
+            var isVerbose = VerboseLogging.HasValue && VerboseLogging.Value;
+            //if (isVerbose || EnvironmentHelper.GetEnvironmentVariableAsBool(Constants.DisplayLogo))
+            //{
+            //   // Utilities.PrintLogo();
+            //}
 
             // Suppress AspNetCoreSupressStatusMessages
             EnvironmentHelper.SetEnvironmentVariableAsBoolIfNotExists(Constants.AspNetCoreSupressStatusMessages);
@@ -440,11 +456,8 @@ namespace Azure.Functions.Cli.Actions.HostActions
 
             Utilities.PrintVersion();
 
-            if (ShouldLaunchInProcNet8AsChildProcess() && await IsInProcNet8Enabled())
-            {
-                await StartInProc8AsChildProcessAsync();
-            }
-
+            Console.WriteLine("Starting the host process. ProcessId:" + Environment.ProcessId + ",RuntimeInformation.FrameworkDescription:" + RuntimeInformation.FrameworkDescription);
+            Console.WriteLine("Starting the host process. Environment.CurrentDirectory:" + Environment.CurrentDirectory);
             ScriptApplicationHostOptions hostOptions = SelfHostWebHostSettingsFactory.Create(Environment.CurrentDirectory);
 
             ValidateAndBuildHostJsonConfigurationIfFileExists(hostOptions);
@@ -478,21 +491,17 @@ namespace Azure.Functions.Cli.Actions.HostActions
 
         private Task StartInProc8AsChildProcessAsync()
         {
-            if (VerboseLogging == true)
-            {
-                ColoredConsole.WriteLine(VerboseColor($"Starting child process for .NET8 In-proc."));
-            }
-
             var commandLineArguments = string.Join(" ", Environment.GetCommandLineArgs().Skip(1));
 
-            // Ensure we launch the child process only once to avoid infinite recursion.
-            if (commandLineArguments.Contains(Net8InProcFlag))
-            {
-                return Task.CompletedTask;
-            }
 
+            if (VerboseLogging == true)
+            {
+                ColoredConsole.WriteLine(VerboseColor($"Starting child process for .NET8 In-proc. ProcessId:" + Environment.ProcessId));
+            }
             var tcs = new TaskCompletionSource<bool>();
-            var functionAppRootPath = GlobalCoreToolsSettings.FunctionAppRootPath!;
+            var functionAppRootPath = Environment.CurrentDirectory;
+            Console.WriteLine($"functionAppRootPath3: {functionAppRootPath}");
+
             var funcExecutableDirectory = Path.GetDirectoryName(typeof(StartHostAction).Assembly.Location)!;
             var inProc8FuncExecutablePath = Path.Combine(funcExecutableDirectory, "in-proc8", "func.exe");
 
@@ -501,7 +510,7 @@ namespace Azure.Functions.Cli.Actions.HostActions
             var inprocNet8ChildProcessInfo = new ProcessStartInfo
             {
                 FileName = inProc8FuncExecutablePath,
-                Arguments = $"{commandLineArguments} --{Net8InProcFlag}",
+                Arguments = $"{commandLineArguments} --{Net8InProcFlag} --no-build",
                 WorkingDirectory = functionAppRootPath,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -533,6 +542,7 @@ namespace Azure.Functions.Cli.Actions.HostActions
                 childProcess.EnableRaisingEvents = true;
                 childProcess.Exited += (sender, args) =>
                 {
+                    Console.WriteLine($"Child process exited with code {childProcess.ExitCode}");
                     tcs.SetResult(true);
                 };
                 childProcess.BeginOutputReadLine();
