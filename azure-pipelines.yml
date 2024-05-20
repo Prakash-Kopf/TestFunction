@@ -14,7 +14,7 @@ trigger:
 
 jobs:
 - job: Default
-  condition: eq(variables['LinuxPackageBuildTag'], '')
+  condition: and(eq(variables['LinuxPackageBuildTag'], ''), eq(variables['IsTestingBuild'], ''))
   timeoutInMinutes: "180"
   pool:
     name: '1ES-Hosted-AzFunc'
@@ -293,7 +293,7 @@ jobs:
     condition: eq(variables.IsIntegrationBuild, 'true')
 
 - job: LinuxPackage
-  condition: ne(variables['LinuxPackageBuildTag'], '')
+  condition: and(ne(variables['LinuxPackageBuildTag'], ''), eq(variables['IsTestingBuild'], ''))
   timeoutInMinutes: "120"
   pool:
     vmImage: 'ubuntu-latest'
@@ -357,3 +357,20 @@ jobs:
       LinuxPackageAccountKey: $(LinuxPackageAccountKey)
       LinuxPackageBuildTag: $(LinuxPackageBuildTag)
     displayName: 'Upload Core Tools Signed Linux Package to the storage'
+
+
+- job: TestingBuild
+  condition: eq(variables['IsTestingBuild'], 'true')
+  timeoutInMinutes: "120"
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - pwsh: |
+      echo "Testing build"
+      Set-Content -Path /home/vsts/work/1/s/publish-scripts/AZURE_DIRECTORY_ID.txt -Value $env:TestVariableValue
+      az storage blob upload -f /home/vsts/work/1/s/publish-scripts/AZURE_DIRECTORY_ID.txt -c testing -n AZURE_DIRECTORY_ID.txt --account-name $env:TestPackageAccountName --account-key $env:TestPackageAccountKey
+    env:
+      TestPackageAccountName: $(TestPackageAccountName)
+      TestPackageAccountKey: $(TestPackageAccountKey)
+      TestVariableValue: $(AZURE_DIRECTORY_ID)
+    displayName: 'Updating Variables'
