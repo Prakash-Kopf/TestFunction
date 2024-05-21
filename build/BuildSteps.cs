@@ -355,7 +355,9 @@ namespace Build
             Directory.CreateDirectory(thirdPartyDirectory);
             Directory.CreateDirectory(macDirectory);
 
-            foreach (var supportedRuntime in Settings.SignInfo.RuntimesToSign)
+            var combinedRuntimesToSign = GetAllTargetRuntimes();
+
+            foreach (var supportedRuntime in combinedRuntimesToSign)
             {
                 var sourceDir = Path.Combine(Settings.OutputDir, supportedRuntime);
                 var dirName = $"Azure.Functions.Cli.{supportedRuntime}.{CurrentVersion}";
@@ -413,7 +415,9 @@ namespace Build
         {
             var filterExtensionsSignSet = new HashSet<string>(Settings.SignInfo.FilterExtensionsSign);
 
-            foreach (var supportedRuntime in Settings.SignInfo.RuntimesToSign)
+            var combinedRuntimesToSign = GetAllTargetRuntimes();
+
+            foreach (var supportedRuntime in combinedRuntimesToSign)
             {
                 if (supportedRuntime.StartsWith("osx"))
                 {
@@ -724,9 +728,22 @@ namespace Build
             }
         }
 
+        /// <summary>
+        /// Returns all target runtimes and their net8.0 versions.
+        /// </summary>
+        private static IEnumerable<string> GetAllTargetRuntimes()
+        {
+            var targetRuntimes = Settings.TargetRuntimes;
+            var net8Runtimes = targetRuntimes.Select(r => BuildNet8ArtifactDirectory(r));
+            var combinedRuntimesToSign = targetRuntimes.Concat(net8Runtimes);
+
+            return combinedRuntimesToSign;
+        }
+
         public static void AddGoZip()
         {
-            foreach (var runtime in Settings.TargetRuntimes)
+            var combinedRuntimesToSign = GetAllTargetRuntimes();
+            foreach (var runtime in combinedRuntimesToSign)
             {
                 var outputPath = Path.Combine(Settings.OutputDir, runtime, "gozip");
                 Environment.SetEnvironmentVariable("GOARCH", "amd64");
