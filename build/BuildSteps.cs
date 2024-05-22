@@ -580,10 +580,11 @@ namespace Build
                     try
                     {
                         Directory.Delete(artifactPath, recursive: true);
+                        Directory.Delete(net8Path, recursive: true);
                     }
                     catch (Exception ex)
                     {
-                        ColoredConsole.Error.WriteLine($"Error deleting {artifactPath}. Exception: {ex}");
+                        ColoredConsole.Error.WriteLine($"Error deleting artifact for runtime {runtime}. Exception: {ex}");
                     }
                 }
 
