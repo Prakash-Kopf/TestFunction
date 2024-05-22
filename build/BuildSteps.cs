@@ -355,7 +355,7 @@ namespace Build
             Directory.CreateDirectory(thirdPartyDirectory);
             Directory.CreateDirectory(macDirectory);
 
-            var combinedRuntimesToSign = GetAllTargetRuntimes();
+            var combinedRuntimesToSign = GetAllRuntimesToSign();
 
             foreach (var supportedRuntime in combinedRuntimesToSign)
             {
@@ -415,7 +415,7 @@ namespace Build
         {
             var filterExtensionsSignSet = new HashSet<string>(Settings.SignInfo.FilterExtensionsSign);
 
-            var combinedRuntimesToSign = GetAllTargetRuntimes();
+            var combinedRuntimesToSign = GetAllRuntimesToSign();
 
             foreach (var supportedRuntime in combinedRuntimesToSign)
             {
@@ -495,9 +495,12 @@ namespace Build
         {
             // Download sigcheck.exe
             var sigcheckPath = Path.Combine(Settings.OutputDir, "sigcheck.exe");
-            using (var client = new WebClient())
+            if (!File.Exists(sigcheckPath))
             {
-                client.DownloadFile(Settings.SignInfo.SigcheckDownloadURL, sigcheckPath);
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(Settings.SignInfo.SigcheckDownloadURL, sigcheckPath);
+                }
             }
 
             // https://peter.hahndorf.eu/blog/post/2010/03/07/WorkAroundSysinternalsLicensePopups
@@ -735,9 +738,16 @@ namespace Build
         {
             var targetRuntimes = Settings.TargetRuntimes;
             var net8Runtimes = targetRuntimes.Select(r => BuildNet8ArtifactDirectory(r));
-            var combinedRuntimesToSign = targetRuntimes.Concat(net8Runtimes);
 
-            return combinedRuntimesToSign;
+            return targetRuntimes.Concat(net8Runtimes);
+        }
+
+        private static IEnumerable<string> GetAllRuntimesToSign()
+        {
+            var runtimeToSign = Settings.SignInfo.RuntimesToSign;
+            var net8Runtimes = runtimeToSign.Select(r => BuildNet8ArtifactDirectory(r));
+
+            return runtimeToSign.Concat(net8Runtimes);
         }
 
         public static void AddGoZip()
