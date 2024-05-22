@@ -16,6 +16,7 @@ namespace Build
 {
     public static class BuildSteps
     {
+        private const string Net8ArtifactNameSuffix = "_net8";
         private static readonly string _wwwroot = Environment.ExpandEnvironmentVariables(@"%HOME%\site\wwwroot");
         private static IntegrationTestBuildManifest _integrationManifest;
 
@@ -139,7 +140,7 @@ namespace Build
             return Path.Combine(Settings.OutputDir, BuildNet8ArtifactDirectory(runtime));
         }
 
-        private static string BuildNet8ArtifactDirectory(string runtime) => runtime + "_net8.0";
+        private static string BuildNet8ArtifactDirectory(string runtime) => $"{runtime}{Net8ArtifactNameSuffix}";
 
         private static void ExecuteDotnetPublish(string outputPath, string rid, string targetFramework, bool skipLaunchingNet8ChildProcess)
         {
@@ -569,7 +570,7 @@ namespace Build
 
                 // Zip the .net8 version as well.
                 var net8Path = BuildNet8ArtifactFullPath(runtime);
-                var net8ZipPath = zipPath.Replace(".zip", "_net8.0.zip");
+                var net8ZipPath = Path.Combine(Settings.OutputDir, $"Azure.Functions.Cli.{runtime}{Net8ArtifactNameSuffix}.{version}.zip");
                 CreateZipFromArtifact(net8Path, net8ZipPath);
 
 
