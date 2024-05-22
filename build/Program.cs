@@ -36,7 +36,7 @@ namespace Build
                 .Then(DotnetPack)
                 .Then(DeleteSBOMTelemetryFolder, skip: !args.Contains("--generateSBOM"))
                 .Then(CreateIntegrationTestsBuildManifest, skip: !args.Contains("--integrationTests"))
-                .Then(UploadToStorage, skip: !args.Contains("--ci") || args.Contains("--codeql"))
+                //.Then(UploadToStorage, skip: !args.Contains("--ci") || args.Contains("--codeql"))
                 .Run();
         }
     }
