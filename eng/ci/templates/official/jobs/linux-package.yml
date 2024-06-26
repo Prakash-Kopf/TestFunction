@@ -39,7 +39,6 @@ jobs:
       displayName: 'Sign'
       folderPath: '/home/vsts/work/1/s/publish-scripts/artifact/'
       pattern: '*.deb'
-      signType: inline
       inlineOperation: |
         [
           {
