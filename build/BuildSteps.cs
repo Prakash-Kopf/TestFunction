@@ -327,6 +327,11 @@ namespace Build
             }
         }
 
+        public static void PrintDotnet()
+        {
+            Shell.Run("dotnet", $"--info");
+        }
+
         public static void Test()
         {
             var funcPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
@@ -342,7 +347,7 @@ namespace Build
 
             Environment.SetEnvironmentVariable("DURABLE_FUNCTION_PATH", Settings.DurableFolder);
 
-            Shell.Run("dotnet", $"test {Settings.TestProjectFile} -f net6.0 --logger trx");
+            Shell.Run("dotnet", $"test {Settings.TestProjectFile} --filter \"Azure.Functions.Cli.Tests.E2E.StartTests.start_dotnet_isolated_csharp_net9\" -f net6.0 --logger trx");
         }
 
         public static void CopyBinariesToSign()

@@ -14,6 +14,7 @@ namespace Build
             Orchestrator
                 .CreateForTarget(args)
                 .Then(TestSignedArtifacts, skip: !args.Contains("--signTest"))
+                .Then(PrintDotnet)
                 .Then(Clean)
                 .Then(LogIntoAzure, skip: !args.Contains("--ci"))
                 .Then(UpdatePackageVersionForIntegrationTests, skip: !args.Contains("--integrationTests"))
@@ -29,11 +30,11 @@ namespace Build
                 .Then(TestPreSignedArtifacts, skip: !args.Contains("--ci"))
                 .Then(CopyBinariesToSign, skip: !args.Contains("--ci"))
                 .Then(Test)
-                .Then(Zip)
-                .Then(DotnetPublishForNupkg)
-                .Then(DotnetPack)
-                .Then(CreateIntegrationTestsBuildManifest, skip: !args.Contains("--integrationTests"))
-                .Then(UploadToStorage, skip: !args.Contains("--ci"))
+                //.Then(Zip)
+                //.Then(DotnetPublishForNupkg)
+                //.Then(DotnetPack)
+                //.Then(CreateIntegrationTestsBuildManifest, skip: !args.Contains("--integrationTests"))
+                //.Then(UploadToStorage, skip: !args.Contains("--ci"))
                 .Run();
         }
     }
