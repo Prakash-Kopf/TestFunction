@@ -44,8 +44,8 @@ namespace Build
             "min.win-x86",
             "min.win-x64",
             "linux-x64",
-            //"osx-x64",
-            //"osx-arm64",
+            "osx-x64",
+            "osx-arm64",
             "win-x86",
             "win-x64", };
 
