@@ -335,7 +335,7 @@ namespace Build
         public static void Test()
         {
             var funcPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? Path.Combine(Settings.OutputDir, "win-x86", "func.exe")
+                ? Path.Combine(Settings.OutputDir, "win-x64", "func.exe")
                 : Path.Combine(Settings.OutputDir, "linux-x64", "func");
             Environment.SetEnvironmentVariable("FUNC_PATH", funcPath);
 
